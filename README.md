@@ -11,17 +11,47 @@ Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://j
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
 ```markdown
-Syntax highlighted code block
+import csv 
+from datetime import datetime
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
+with open('data_test.csv', "r") as srcfile:
+	reader = csv.DictReader(srcfile)
+	
+	count = 0 
+	entries = 0
+	temp_traj = ''
+	temp_target = ''
+	hashes = []
+	ids = []
+	
+	for row in reader: 
+		if row['hash'] not in hashes:
+			#t1 = datetime.strptime(row['time_entry'], "%H:%M:%S")
+			#t2 = datetime.strptime(row['time_exit'], "%H:%M:%S")
+			#totalt = t1-t2 
+			ids.append(row)
+			with open('results.csv', 'a', newline='') as outfile: 
+				thewriter = csv.writer(outfile)
+				thewriter.writerow([temp_traj, temp_target])
+			if temp_target == 1:
+				entries = entries + 1
+			hashes.append(row['hash'])
+			temp_traj = row['trajectory_id'] 
+			count = count + 1
+		
+		else: 
+			row_name, row_value = row['trajectory_id'].rsplit('_',1)
+			temp_name, temp_value = temp_traj.rsplit('_', 1)
+			if int(row_value) > int(temp_value):
+				temp_traj = row['trajectory_id']
+				if 3736901.4 <= float(row['x_entry']) and float(row['x_entry']) <= 3782901.4 and 19358905.4 >= float((row['y_entry'])[1:]) and float((row['y_entry'])[1:]) >= 19158905.4: 
+					temp_target = 1
+				else:
+					temp_target = 0
+				
+print ('done')
+print (count)
+print (entries)
 
 **Bold** and _Italic_ and `Code` text
 
